@@ -194,11 +194,25 @@ class Book
     #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read'])]
     public ?int $rating = null;
 
+    /**
+     * Promotion status (admin only read)
+     */
+    #[Assert\NotNull]
     #[ORM\Column(type: 'string', enumType: PromotionStatus::class, options: ['default' => PromotionStatus::None])]
+    #[Groups(['Book:read:admin', 'Book:write'])]
     public PromotionStatus $promotionStatus = PromotionStatus::None;
 
-    #[ORM\Column(type: 'string', unique: true)]
+    /**
+     * Slug (public read)
+     */
     #[Assert\NotBlank]
+    #[Assert\Length(min: 5)]
+    #[Assert\Regex(
+        pattern: '/^[a-z0-9-]+$/',
+        message: 'Slug must contain only lowercase letters, numbers, or hyphens.'
+    )]
+    #[ORM\Column(type: 'string', unique: true)]
+    #[Groups(['Book:read', 'Book:read:admin', 'Book:write'])]
     public string $slug;
 
     public function __construct()
