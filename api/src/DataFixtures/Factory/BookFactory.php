@@ -70,8 +70,13 @@ final class BookFactory extends PersistentProxyObjectFactory
      */
     protected function defaults(): array
     {
+        static $counter = 0;
+        $counter++;
+
         return [
             'condition' => self::faker()->randomElement(BookCondition::getCases()),
+            'slug' => 'book-' . $counter,
+            'promotionStatus' => \App\Enum\PromotionStatus::Basic,
         ];
     }
 
