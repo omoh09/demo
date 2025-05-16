@@ -33,6 +33,7 @@ use Symfony\Component\Serializer\Normalizer\AbstractNormalizer;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Uid\Uuid;
 use Symfony\Component\Validator\Constraints as Assert;
+use App\Enum\PromotionStatus;
 
 /**
  * A book.
@@ -192,6 +193,13 @@ class Book
     )]
     #[Groups(groups: ['Book:read', 'Book:read:admin', 'Bookmark:read'])]
     public ?int $rating = null;
+
+    #[ORM\Column(type: 'string', enumType: PromotionStatus::class, options: ['default' => PromotionStatus::None])]
+    public PromotionStatus $promotionStatus = PromotionStatus::None;
+
+    #[ORM\Column(type: 'string', unique: true)]
+    #[Assert\NotBlank]
+    public string $slug;
 
     public function __construct()
     {
