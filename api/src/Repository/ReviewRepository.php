@@ -55,19 +55,21 @@ class ReviewRepository extends ServiceEntityRepository
 
     public function findDayOrMonthWithMostReviews(bool $byMonth = false): ?string
     {
-        $qb = $this->createQueryBuilder('r');
+        $connection = $this->getEntityManager()->getConnection();
 
-        $dateFormat = $byMonth ? "DATE_FORMAT(r.publishedAt, '%Y-%m')" : "DATE_FORMAT(r.publishedAt, '%Y-%m-%d')";
-
-        $qb->select("$dateFormat AS period")
-        ->addSelect('COUNT(r.id) AS reviewsCount')
-        ->groupBy('period')
-        ->orderBy('reviewsCount', 'DESC')
-        ->addOrderBy('period', 'DESC')
-        ->setMaxResults(1);
-
-        $result = $qb->getQuery()->getOneOrNullResult();
-
+        $format = $byMonth ? 'YYYY-MM' : 'YYYY-MM-DD';
+        
+        $sql = "
+            SELECT TO_CHAR(r.published_at, '$format') AS period, COUNT(r.id) AS reviewsCount
+            FROM review r
+            GROUP BY period
+            ORDER BY reviewsCount DESC, period DESC
+            LIMIT 1
+        ";
+        
+        $stmt = $connection->prepare($sql);
+        $result = $stmt->executeQuery()->fetchAssociative();
+        
         return $result ? $result['period'] : null;
     }
 
