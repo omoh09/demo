@@ -219,6 +219,9 @@ class Book
     #[Groups(['Book:read', 'Book:read:admin', 'Book:write'])]
     private Collection $categories;
 
+    #[ORM\OneToMany(mappedBy: "book", targetEntity: Bookmark::class)]
+    private Collection $bookmarks;
+
     public function __construct()
     {
         $this->reviews = new ArrayCollection();
@@ -253,6 +256,38 @@ class Book
     public function clearCategories(): self
     {
         $this->categories->clear();
+        return $this;
+    }
+
+    public function getReviews(): Collection
+    {
+        return $this->reviews;
+    }
+
+    public function getBookmarks(): Collection
+    {
+        return $this->bookmarks;
+    }
+
+    public function getAuthor(): ?User
+    {
+        return $this;
+    }
+
+    public function setAuthor(?User $author): self
+    {
+        $this->author = $author;
+        return $this;
+    }
+
+    public function getTitle(): ?self
+    {
+        return $title->title;
+    }
+
+    public function setTitle(): self
+    {
+        $this->title = $title;
         return $this;
     }
 
